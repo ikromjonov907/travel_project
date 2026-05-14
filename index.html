@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>TravelGo - 35 ta davlat bo'ylab sayohat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+        :root{
+            --bg:#f4f7f6;
+            --text:#1e293b;
+            --card:white;
+            --nav:rgba(255,255,255,0.96);
+            --border:#e2e8f0;
+            --shadow:0 10px 25px -5px rgba(0,0,0,0.05),0 8px 10px -6px rgba(0,0,0,0.02);
+        }
+        body.dark-mode{
+            --bg:#0f172a;
+            --text:#f1f5f9;
+            --card:#1e293b;
+            --nav:#0f172ae6;
+            --border:#334155;
+        }
+        body{background:var(--bg);color:var(--text);transition:.2s;}
+        
+        .navbar{
+            display:flex;justify-content:space-between;align-items:center;
+            padding:16px 5%;background:var(--nav);position:fixed;width:100%;z-index:1000;
+            backdrop-filter:blur(8px);flex-wrap:wrap;gap:12px;box-shadow:var(--shadow);
+        }
+        .logo{font-size:24px;font-weight:800;color:var(--text);}
+        .logo span{color:#ef4444;}
+        .search-wrapper{
+            display:flex;align-items:center;background:var(--card);border:1px solid var(--border);
+            border-radius:60px;padding:6px 16px;gap:8px;flex:1;max-width:280px;
+        }
+        .search-input{border:none;background:transparent;padding:8px 0;width:100%;outline:none;color:var(--text);}
+        .clear-search{background:none;border:none;color:#94a3b8;cursor:pointer;display:none;}
+        .nav-links{display:flex;gap:12px;align-items:center;flex-wrap:wrap;list-style:none;}
+        .nav-links a{text-decoration:none;color:var(--text);font-weight:500;font-size:14px;cursor:pointer;}
+        .nav-links a:hover{color:#ef4444;}
+        .btn-contact{background:#ef4444;color:white!important;padding:6px 18px;border-radius:40px;cursor:pointer;}
+        .dropbtn{background:transparent;border:1px solid #ef4444;color:#ef4444;padding:6px 14px;border-radius:40px;cursor:pointer;}
+        .dropdown{position:relative;}
+        .dropdown-content{
+            display:none;position:absolute;right:0;background:var(--card);min-width:130px;
+            border-radius:20px;box-shadow:0 20px 35px -10px rgba(0,0,0,0.2);z-index:10;
+        }
+        .dropdown-content button{
+            width:100%;padding:10px 16px;text-align:left;border:none;background:none;cursor:pointer;color:var(--text);
+        }
+        .dropdown-content button:hover{background:#ef4444;color:white;}
+        .dropdown:hover .dropdown-content{display:block;}
+        .theme-btn{background:transparent;border:1px solid #ef4444;color:#ef4444;padding:6px 14px;border-radius:40px;cursor:pointer;}
+
+        .login-modal{
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.8);z-index:7000;justify-content:center;align-items:center;
+        }
+        .login-modal.active{display:flex;}
+        .login-card{
+            background:var(--card);border-radius:40px;padding:40px;max-width:400px;width:90%;
+            text-align:center;
+        }
+        .login-card h2{color:#ef4444;margin-bottom:20px;}
+        .login-card input{
+            width:100%;padding:14px;margin:10px 0;border-radius:24px;
+            border:1px solid var(--border);background:var(--card);color:var(--text);
+        }
+        .login-card button{
+            background:#ef4444;color:white;border:none;padding:12px;border-radius:40px;
+            width:100%;margin-top:15px;cursor:pointer;font-weight:600;
+        }
+        .close-login{position:absolute;top:20px;right:30px;background:red;color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;}
+
+        .hero{
+            height:100vh;background:linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.6)),
+            url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&h=1080&fit=crop');
+            background-size:cover;display:flex;align-items:center;justify-content:center;text-align:center;color:white;
+        }
+        .hero-content h1{font-size:3rem;margin-bottom:16px;}
+        .hero-content p{font-size:1rem;opacity:0.9;}
+        .btn-main{background:#ef4444;color:white;border:none;padding:12px 32px;border-radius:40px;margin-top:24px;font-weight:600;cursor:pointer;}
+
+        .destinations{padding:100px 5%;text-align:center;}
+        .destinations h2{font-size:2rem;display:inline-block;position:relative;color:var(--text);}
+        .destinations h2::after{content:'';position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);width:60px;height:3px;background:#ef4444;}
+        .result-count{text-align:left;margin:24px 0 12px;font-size:0.85rem;opacity:0.7;}
+        .card-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-top:32px;}
+        .card{
+            background:var(--card);border-radius:28px;padding:16px;box-shadow:var(--shadow);
+            cursor:pointer;transition:all .2s;text-align:left;
+        }
+        .card:hover{transform:translateY(-6px);}
+        .card img{width:100%;height:200px;object-fit:cover;border-radius:20px;}
+        .card h3{margin:14px 0 6px;font-size:1.2rem;}
+        .card p{font-size:0.8rem;opacity:0.7;}
+        .price-badge{background:#ef4444;color:white;padding:4px 12px;border-radius:40px;font-size:0.7rem;display:inline-block;margin-top:10px;}
+
+        .discount-system {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 16px;
+            padding: 8px 16px;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .discount-badge-main {
+            background: white;
+            color: #ef4444;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 800;
+        }
+        .discount-percent {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .discount-percent i {margin-right: 5px;}
+        .price-comparison {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .old-price {
+            color: rgba(255,255,255,0.7);
+            text-decoration: line-through;
+            font-size: 0.85rem;
+        }
+        .new-price {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+        .save-amount {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: white;
+        }
+
+        .fullscreen-modal{
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:rgba(0,0,0,0.85);z-index:2000;overflow-y:auto;
+            justify-content:center;align-items:center;
+        }
+        .fullscreen-modal.active{display:flex;}
+        .modal-close-btn{
+            position:absolute;top:20px;right:25px;background:#ef4444;color:white;
+            border:none;border-radius:50%;width:50px;height:50px;font-size:24px;
+            cursor:pointer;z-index:2100;
+        }
+        .city-full-content{
+            max-width:1000px;width:90%;margin:0 auto;background:var(--card);
+            border-radius:48px;overflow:hidden;animation:fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn{
+            from{opacity:0;transform:scale(0.95);}
+            to{opacity:1;transform:scale(1);}
+        }
+        .city-header{display:flex;flex-wrap:wrap;}
+        .city-img-col{flex:1;min-width:280px;}
+        .city-img-col img{width:100%;height:100%;min-height:350px;object-fit:cover;}
+        .city-info-col{flex:1;padding:36px;background:var(--card);}
+        .city-info-col h1{font-size:2rem;color:#ef4444;margin-bottom:16px;}
+        .city-desc{color:var(--text);opacity:0.8;margin-bottom:24px;line-height:1.6;}
+        .info-row{
+            display:flex;align-items:center;gap:16px;padding:12px 0;
+            border-bottom:1px solid var(--border);
+        }
+        .info-icon{
+            width:40px;height:40px;background:#ef44441a;border-radius:20px;
+            display:flex;align-items:center;justify-content:center;color:#ef4444;
+        }
+        .info-label{font-size:0.7rem;font-weight:700;color:#ef4444;letter-spacing:1px;}
+        .info-value{font-weight:600;color:var(--text);}
+        .btn-group{display:flex;gap:15px;margin-top:25px;}
+        .book-hotel-btn{
+            background:#10b981;color:white;border:none;padding:12px 28px;
+            border-radius:60px;font-weight:700;cursor:pointer;flex:1;
+        }
+        .cancel-city-btn{
+            background:#ef4444;color:white;border:none;padding:12px 28px;
+            border-radius:60px;cursor:pointer;flex:1;
+        }
+
+        .hotels-page{
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:var(--bg);z-index:3000;overflow-y:auto;
+        }
+        .hotels-page.active{display:block;}
+        .hotels-container{
+            max-width:1200px;margin:0 auto;padding:100px 30px 50px;
+        }
+        .back-to-city{
+            background:#ef4444;color:white;border:none;padding:10px 24px;
+            border-radius:40px;cursor:pointer;margin-bottom:30px;display:inline-flex;align-items:center;gap:8px;
+        }
+        .hotels-header{text-align:center;margin-bottom:40px;}
+        .hotels-header h1{font-size:2rem;color:#ef4444;}
+        .hotels-grid{
+            display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:28px;
+        }
+        .hotel-card{
+            background:var(--card);border-radius:28px;overflow:hidden;
+            box-shadow:var(--shadow);cursor:pointer;transition:transform 0.2s;
+        }
+        .hotel-card:hover{transform:translateY(-5px);}
+        .hotel-card img{width:100%;height:220px;object-fit:cover;}
+        .hotel-info{padding:20px;}
+        .hotel-name{font-size:1.3rem;font-weight:700;color:var(--text);}
+        .hotel-location{font-size:0.8rem;color:#ef4444;margin:8px 0;}
+        .hotel-rating{color:#fbbf24;margin-top:8px;font-size:0.9rem;}
+        .amenities{
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+        .amenity-item{
+            font-size:0.7rem;
+            color:var(--text);
+            opacity:0.8;
+            display:flex;
+            align-items:center;
+            gap:5px;
+        }
+        .amenity-item i{color:#ef4444;font-size:0.8rem;width:20px;}
+
+        .hotel-detail-page{
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:var(--bg);z-index:3500;overflow-y:auto;
+        }
+        .hotel-detail-page.active{display:block;}
+        .hotel-detail-container{
+            max-width:1000px;margin:0 auto;padding:100px 30px 50px;
+        }
+        .hotel-detail-card{
+            background:var(--card);border-radius:48px;overflow:hidden;box-shadow:var(--shadow);
+        }
+        .hotel-detail-img{
+            width:100%;height:400px;object-fit:cover;
+        }
+        .hotel-detail-content{
+            padding:36px;
+        }
+        .hotel-detail-name{
+            font-size:2rem;font-weight:800;color:#ef4444;margin-bottom:12px;
+        }
+        .hotel-detail-location{
+            font-size:1rem;margin-bottom:20px;
+        }
+        .hotel-detail-desc{
+            color:var(--text);line-height:1.6;margin-bottom:24px;
+        }
+        .detail-row{
+            display:flex;align-items:center;gap:20px;padding:14px 0;
+            border-bottom:1px solid var(--border);
+        }
+        .detail-label{width:120px;font-weight:600;color:#ef4444;}
+        .detail-value{flex:1;color:var(--text);}
+        .amenities-grid{
+            display:grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .amenity-card{
+            background:var(--bg);padding:10px 16px;border-radius:40px;
+            display:flex;align-items:center;gap:10px;
+        }
+        .amenity-card i{font-size:1rem;color:#ef4444;width:20px;}
+        .amenity-card span{font-size:0.85rem;color:var(--text);}
+        .book-now-btn{
+            background:#10b981;color:white;border:none;padding:16px 32px;
+            border-radius:60px;font-weight:700;font-size:1rem;cursor:pointer;
+            margin-top:25px;width:100%;
+        }
+        .back-to-hotels-detail{
+            background:#ef4444;color:white;border:none;padding:10px 24px;
+            border-radius:40px;cursor:pointer;margin-bottom:20px;display:inline-flex;align-items:center;gap:8px;
+        }
+
+        .info-page{
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:var(--bg);z-index:5000;overflow-y:auto;
+        }
+        .info-page.active{display:block;}
+        .info-container{
+            max-width:700px;margin:0 auto;padding:100px 30px 50px;
+        }
+        .info-card{
+            background:var(--card);border-radius:40px;overflow:hidden;box-shadow:var(--shadow);
+        }
+        .info-header{
+            background:#ef4444;padding:30px;text-align:center;color:white;
+        }
+        .info-header h1{font-size:1.6rem;}
+        .info-body{padding:32px;}
+        .hotel-summary{
+            background:var(--bg);border-radius:28px;padding:20px;margin-bottom:24px;
+        }
+        .hotel-summary h3{color:#ef4444;margin-bottom:15px;}
+        .summary-row{
+            display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);
+        }
+        .form-row{display:flex;gap:15px;margin-bottom:15px;flex-wrap:wrap;}
+        .form-group{flex:1;min-width:150px;}
+        .form-group label{display:block;font-size:0.75rem;font-weight:600;color:#ef4444;margin-bottom:5px;}
+        .form-group input,.form-group select{
+            width:100%;padding:14px;border-radius:24px;border:1px solid var(--border);
+            background:var(--card);color:var(--text);
+        }
+        .total-box{
+            background:#10b9811a;padding:18px;border-radius:24px;text-align:center;margin:20px 0;
+        }
+        .confirm-booking{
+            background:#10b981;color:white;border:none;padding:16px;border-radius:60px;
+            font-weight:700;width:100%;cursor:pointer;font-size:1rem;
+        }
+
+        .success-page{
+            display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+            background:var(--bg);z-index:6000;overflow-y:auto;
+        }
+        .success-page.active{display:block;}
+        .success-container{
+            max-width:600px;margin:0 auto;padding:100px 30px 50px;
+        }
+        .success-card{
+            background:var(--card);border-radius:40px;overflow:hidden;box-shadow:var(--shadow);
+            text-align:center;
+        }
+        .success-header{
+            background:linear-gradient(135deg,#10b981,#059669);padding:40px;color:white;
+        }
+        .success-header i{font-size:70px;margin-bottom:20px;}
+        .success-header h1{font-size:1.6rem;}
+        .success-body{padding:30px;}
+        .success-info{background:var(--bg);border-radius:24px;padding:20px;margin-bottom:24px;text-align:left;}
+        .success-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+        .success-total{background:#ef4444;color:white;padding:20px;border-radius:24px;margin:20px 0;}
+        .home-btn{background:var(--text);color:var(--bg);border:none;padding:14px;border-radius:60px;font-weight:600;width:100%;cursor:pointer;}
+
+        /* FOOTER */
+        .footer{
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #cbd5e1;
+            padding: 60px 5% 30px;
+            margin-top: 60px;
+        }
+        .footer-container{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-col h4{
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        .footer-col h4::after{
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: #ef4444;
+        }
+        .footer-col p{
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .footer-col ul{
+            list-style: none;
+        }
+        .footer-col ul li{
+            margin-bottom: 10px;
+        }
+        .footer-col ul li a{
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+        .footer-col ul li a:hover{
+            color: #ef4444;
+            padding-left: 5px;
+        }
+        .social-links{
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .social-links a{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            transition: 0.3s;
+        }
+        .social-links a:hover{
+            background: #ef4444;
+            transform: translateY(-3px);
+        }
+        .footer-bottom{
+            text-align: center;
+            padding-top: 40px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+        }
+        
+        @media(max-width:700px){
+            .navbar{flex-direction:column;}
+            .search-wrapper{max-width:100%;width:100%;}
+            .form-row{flex-direction:column;}
+            .summary-row{flex-direction:column;gap:8px;}
+            .success-row{flex-direction:column;gap:8px;}
+            .city-header{flex-direction:column;}
+            .detail-row{flex-direction:column;align-items:flex-start;gap:8px;}
+            .amenities-grid{justify-content:center;}
+            .amenities{grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));}
+            .footer-container{grid-template-columns: 1fr; text-align: center;}
+            .footer-col h4::after{left: 50%; transform: translateX(-50%);}
+            .social-links{justify-content: center;}
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Travel<span>Go</span></div>
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Shahar yoki davlat...">
+            <button class="clear-search" id="clearSearchBtn"><i class="fas fa-times-circle"></i></button>
+        </div>
+        <ul class="nav-links">
+            <li><a class="nav-home" id="navHome">Bosh sahifa</a></li>
+            <li><a class="nav-destinations" id="navDestinations">Yo'nalishlar</a></li>
+            <li><a class="nav-services" id="navServices">Xizmatlar</a></li>
+            <li><a class="btn-contact" id="loginBtn">Kirish</a></li>
+            <li class="dropdown">
+                <button class="dropbtn" id="langBtn">🌐 Til</button>
+                <div class="dropdown-content">
+                    <button id="langUz">🇺🇿 O'zbek</button>
+                    <button id="langRu">🇷🇺 Русский</button>
+                    <button id="langEn">🇬🇧 English</button>
+                </div>
+            </li>
+            <li><button class="theme-btn" id="themeToggle">🌙 Oy</button></li>
+        </ul>
+    </nav>
+
+    <div id="loginModal" class="login-modal">
+        <button class="close-login" id="closeLoginBtn"><i class="fas fa-times"></i></button>
+        <div class="login-card">
+            <h2 id="loginTitle"><i class="fas fa-sign-in-alt"></i> Kirish</h2>
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPassword" placeholder="Parol">
+            <button id="doLoginBtn">Kirish</button>
+            <p style="margin-top:15px;font-size:12px;" id="demoText">Demo: istalgan email/parol</p>
+        </div>
+    </div>
+
+    <header class="hero" id="home">
+        <div class="hero-content">
+            <h1 id="heroTitle">Dunyo bo'ylab sayohat</h1>
+            <p id="heroSubtitle">35 ta davlat | Eng mashhur manzillar</p>
+            <button class="btn-main" id="startBtn">Sayohatni boshlash</button>
+        </div>
+    </header>
+    
+    <section class="destinations" id="destinations">
+        <h2 id="destinationsTitle">🌍 35 ta mashhur yo'nalish</h2>
+        <div class="result-count" id="resultCount"></div>
+        <div class="card-container" id="cardContainer"></div>
+    </section>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>TravelGo</h4>
+                <p>Sizning ishonchli sayohat hamkoringiz. 35 dan ortiq davlat bo‘ylab eng yaxshi mehmonxonalar va chegirmalar.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Mashhur yo‘nalishlar</h4>
+                <ul>
+                    <li><a href="#">Turkiya</a></li>
+                    <li><a href="#">Dubai</a></li>
+                    <li><a href="#">Italiya</a></li>
+                    <li><a href="#">Tailand</a></li>
+                    <li><a href="#">Maldivlar</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Foydali havolalar</h4>
+                <ul>
+                    <li><a href="#">Biz haqimizda</a></li>
+                    <li><a href="#">Yetkazib berish shartlari</a></li>
+                    <li><a href="#">Maxfiylik siyosati</a></li>
+                    <li><a href="#">Tez-tez so‘raladigan savollar</a></li>
+                    <li><a href="#">Bog‘lanish</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Biz bilan bog‘laning</h4>
+                <ul>
+                    <li><i class="fas fa-phone-alt"></i> +998 71 123 45 67</li>
+                    <li><i class="fas fa-envelope"></i> info@travelgo.uz</li>
+                    <li><i class="fas fa-map-marker-alt"></i> Toshkent, O‘zbekiston</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 TravelGo | 35 davlat | Barcha huquqlar himoyalangan</p>
+        </div>
+    </footer>
+
+    <div id="cityModal" class="fullscreen-modal">
+        <button class="modal-close-btn" id="closeCityModal"><i class="fas fa-times"></i></button>
+        <div id="cityContent" class="city-full-content"></div>
+    </div>
+
+    <div id="hotelsPage" class="hotels-page">
+        <div class="hotels-container">
+            <button class="back-to-city" id="backToCityBtn"><i class="fas fa-arrow-left"></i> <span id="backToCityText">Shaharga qaytish</span></button>
+            <div class="hotels-header">
+                <h1 id="hotelsCityTitle">🏨 Mehmonxonalar</h1>
+                <p id="hotelsCitySubtitle">Eng yaxshi mehmonxonalar</p>
+            </div>
+            <div class="hotels-grid" id="hotelsGrid"></div>
+        </div>
+    </div>
+
+    <div id="hotelDetailPage" class="hotel-detail-page">
+        <div class="hotel-detail-container">
+            <button class="back-to-hotels-detail" id="backToHotelsDetail"><i class="fas fa-arrow-left"></i> <span id="backToHotelsText">Mehmonxonalarga qaytish</span></button>
+            <div class="hotel-detail-card" id="hotelDetailContent"></div>
+        </div>
+    </div>
+
+    <div id="infoPage" class="info-page">
+        <div class="info-container">
+            <div class="info-card">
+                <div class="info-header">
+                    <h1 id="infoTitle">📋 Sayohatchi ma'lumotlari</h1>
+                    <p id="infoSubtitle">Bron qilish uchun ma'lumotlaringizni kiriting</p>
+                </div>
+                <div class="info-body">
+                    <div class="hotel-summary" id="hotelSummary"></div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelFullname"><i class="fas fa-user"></i> To'liq ism</label>
+                            <input type="text" id="bookFullname" placeholder="Ism Familiya">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelEmail"><i class="fas fa-envelope"></i> Email</label>
+                            <input type="email" id="bookEmail" placeholder="example@mail.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelPhone"><i class="fas fa-phone-alt"></i> Telefon</label>
+                            <input type="tel" id="bookPhone" placeholder="+998 90 123 45 67">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelBirthdate"><i class="fas fa-calendar-alt"></i> Tug'ilgan sana</label>
+                            <input type="date" id="bookBirthdate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelCitizenship"><i class="fas fa-flag-checkered"></i> Fuqarolik</label>
+                            <select id="bookCitizenship">
+                                <option value="O'zbekiston">O'zbekiston</option>
+                                <option value="Rossiya">Rossiya</option>
+                                <option value="AQSh">AQSh</option>
+                                <option value="Turkiya">Turkiya</option>
+                                <option value="BAA">BAA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label id="labelPassport"><i class="fas fa-passport"></i> Passport</label>
+                            <input type="text" id="bookPassport" placeholder="AA 1234567">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelCard"><i class="fas fa-credit-card"></i> Karta raqami</label>
+                            <input type="text" id="bookCard" placeholder="8600 1234 5678 9012">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelCardExp"><i class="fas fa-calendar"></i> Karta muddati</label>
+                            <input type="text" id="bookCardExp" placeholder="MM/YY">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelNights"><i class="fas fa-bed"></i> Kechalar soni</label>
+                            <input type="number" id="bookNights" min="1" value="2">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelRooms"><i class="fas fa-door-open"></i> Xonalar soni</label>
+                            <input type="number" id="bookRooms" min="1" value="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label id="labelCheckIn"><i class="fas fa-calendar-check"></i> Kirish sanasi</label>
+                            <input type="date" id="bookCheckIn">
+                        </div>
+                        <div class="form-group">
+                            <label id="labelCheckOut"><i class="fas fa-calendar-times"></i> Chiqish sanasi</label>
+                            <input type="date" id="bookCheckOut">
+                        </div>
+                    </div>
+                    
+                    <div class="total-box">
+                        <span id="totalLabel">💰 Umumiy to'lov: </span><strong id="totalPrice">$0</strong>
+                    </div>
+                    
+                    <button class="confirm-booking" id="confirmBookingBtn">
+                        <i class="fas fa-check-circle"></i> <span id="confirmBtnText">Bronni tasdiqlash</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="successPage" class="success-page">
+        <div class="success-container">
+            <div class="success-card">
+                <div class="success-header"><i class="fas fa-check-circle"></i><h1 id="successTitle">✅ Bron muvaffaqiyatli!</h1><p id="successSubtitle">Sayohatingiz tasdiqlandi</p></div>
+                <div class="success-body" id="successBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lang='uz', selectedCity=null, selectedHotel=null;
+        let isLoggedIn = false;
+        
+        // TIL MATNLARI
+        const translations = {
+            uz: {
+                backToCity: "Shaharga qaytish",
+                backToHotels: "Mehmonxonalarga qaytish",
+                bookNow: "Bron qilish",
+                confirmBooking: "Bronni tasdiqlash",
+                totalPayment: "💰 Umumiy to'lov: ",
+                fillAllFields: "Barcha maydonlarni to'ldiring!",
+                checkOutError: "Chiqish sanasi kirish sanasidan keyin bo'lishi kerak!",
+                welcome: "Xush kelibsiz!",
+                login: "Kirish",
+                demo: "Demo: istalgan email/parol",
+                home: "Bosh sahifa",
+                destinations: "Yo'nalishlar",
+                services: "Xizmatlar",
+                heroTitle: "Dunyo bo'ylab sayohat",
+                heroSubtitle: "35 ta davlat | Eng mashhur manzillar",
+                startBtn: "Sayohatni boshlash",
+                destinationsTitle: "🌍 35 ta mashhur yo'nalish",
+                infoTitle: "📋 Sayohatchi ma'lumotlari",
+                infoSubtitle: "Bron qilish uchun ma'lumotlaringizni kiriting",
+                successTitle: "✅ Bron muvaffaqiyatli!",
+                successSubtitle: "Sayohatingiz tasdiqlandi",
+                homeBtn: "Bosh sahifaga",
+                loginRequired: "Iltimos, bron qilishdan oldin tizimga kiring!"
+            },
+            ru: {
+                backToCity: "Вернуться в город",
+                backToHotels: "Вернуться к отелям",
+                bookNow: "Забронировать",
+                confirmBooking: "Подтвердить бронь",
+                totalPayment: "💰 Общая оплата: ",
+                fillAllFields: "Заполните все поля!",
+                checkOutError: "Дата выезда должна быть позже даты заезда!",
+                welcome: "Добро пожаловать!",
+                login: "Вход",
+                demo: "Демо: любой email/пароль",
+                home: "Главная",
+                destinations: "Направления",
+                services: "Услуги",
+                heroTitle: "Путешествия по миру",
+                heroSubtitle: "35 стран | Лучшие направления",
+                startBtn: "Начать путешествие",
+                destinationsTitle: "🌍 35 популярных направлений",
+                infoTitle: "📋 Данные путешественника",
+                infoSubtitle: "Введите ваши данные для бронирования",
+                successTitle: "✅ Бронь успешна!",
+                successSubtitle: "Ваше путешествие подтверждено",
+                homeBtn: "На главную",
+                loginRequired: "Пожалуйста, войдите в систему перед бронированием!"
+            },
+            en: {
+                backToCity: "Back to City",
+                backToHotels: "Back to Hotels",
+                bookNow: "Book Now",
+                confirmBooking: "Confirm Booking",
+                totalPayment: "💰 Total Payment: ",
+                fillAllFields: "Please fill all fields!",
+                checkOutError: "Check-out date must be after check-in date!",
+                welcome: "Welcome!",
+                login: "Login",
+                demo: "Demo: any email/password",
+                home: "Home",
+                destinations: "Destinations",
+                services: "Services",
+                heroTitle: "Travel around the world",
+                heroSubtitle: "35 countries | Best destinations",
+                startBtn: "Start Journey",
+                destinationsTitle: "🌍 35 popular destinations",
+                infoTitle: "📋 Traveler Information",
+                infoSubtitle: "Enter your details to book",
+                successTitle: "✅ Booking Successful!",
+                successSubtitle: "Your trip is confirmed",
+                homeBtn: "Back to Home",
+                loginRequired: "Please login before booking!"
+            }
+        };
+
+        function t(key) {
+            return translations[lang]?.[key] || translations.uz[key] || key;
+        }
+
+        // 35 TA DAVLAT (ISHLAYdIGAN RASMLAR BILAN)
+        const countries = [
+            {id:"turkey",name:"Turkiya",nameRu:"Турция",nameEn:"Turkey",flag:"🇹🇷",country:"Turkiya",price:800,img:"https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=800&h=500&fit=crop",desc:"Sharq va G'arb uchrashuvi",places:"Istanbul, Kapadokiya, Antalya",bestSeason:"Aprel-Okt"},
+            {id:"egypt",name:"Misr",nameRu:"Египет",nameEn:"Egypt",flag:"🇪🇬",country:"Misr",price:700,img:"https://images.unsplash.com/photo-1503918486180-71e5e5a2a3b9?w=800&h=500&fit=crop",desc:"Fir'avnlar zamini",places:"Piramidalar, Nil daryosi",bestSeason:"Noyabr-Fevral"},
+            {id:"dubai",name:"Dubai",nameRu:"Дубай",nameEn:"Dubai",flag:"🇦🇪",country:"BAA",price:1200,img:"https://images.unsplash.com/photo-1518684079-3c830dcef090?w=800&h=500&fit=crop",desc:"Kelajak shahri",places:"Burj Xalifa, Palm Jumeirah",bestSeason:"Noyabr-Mart"},
+            {id:"france",name:"Fransiya",nameRu:"Франция",nameEn:"France",flag:"🇫🇷",country:"Fransiya",price:1500,img:"https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800&h=500&fit=crop",desc:"Romantika poytaxti",places:"Eyfel minorasi, Luvr",bestSeason:"Aprel-Okt"},
+            {id:"italy",name:"Italiya",nameRu:"Италия",nameEn:"Italy",flag:"🇮🇹",country:"Italiya",price:1300,img:"https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&h=500&fit=crop",desc:"Tarix va madaniyat",places:"Kolizey, Vatikan",bestSeason:"Aprel-Iyun"},
+            {id:"spain",name:"Ispaniya",nameRu:"Испания",nameEn:"Spain",flag:"🇪🇸",country:"Ispaniya",price:1100,img:"https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=800&h=500&fit=crop",desc:"Flamenko va plyajlar",places:"Barselona, Madrid",bestSeason:"May-Sent"},
+            {id:"usa",name:"AQSh",nameRu:"США",nameEn:"USA",flag:"🇺🇸",country:"AQSh",price:2000,img:"https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&h=500&fit=crop",desc:"Imkoniyatlar mamlakati",places:"Nyu-York, Los-Anjeles",bestSeason:"Aprel-Iyun"},
+            {id:"mexico",name:"Meksika",nameRu:"Мексика",nameEn:"Mexico",flag:"🇲🇽",country:"Meksika",price:900,img:"https://images.unsplash.com/photo-1518638150340-f706e86654de?w=800&h=500&fit=crop",desc:"Mayya sivilizatsiyasi",places:"Kankun, Mexiko",bestSeason:"Noyabr-Aprel"},
+            {id:"thailand",name:"Tailand",nameRu:"Таиланд",nameEn:"Thailand",flag:"🇹🇭",country:"Tailand",price:600,img:"https://images.unsplash.com/photo-1537955449355-90f3f0192a5a?w=800&h=500&fit=crop",desc:"Jannat plyajlari",places:"Bangkok, Phuket",bestSeason:"Noyabr-Fevral"},
+            {id:"japan",name:"Yaponiya",nameRu:"Япония",nameEn:"Japan",flag:"🇯🇵",country:"Yaponiya",price:1800,img:"https://images.unsplash.com/photo-1536098561742-ca998e48ecc3?w=800&h=500&fit=crop",desc:"An'ana va texnologiya",places:"Tokio, Kioto",bestSeason:"Mart-May"},
+            {id:"china",name:"Xitoy",nameRu:"Китай",nameEn:"China",flag:"🇨🇳",country:"Xitoy",price:1100,img:"https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&h=500&fit=crop",desc:"Buyuk devor mamlakati",places:"Pekin, Shanxay",bestSeason:"Aprel-Okt"},
+            {id:"india",name:"Hindiston",nameRu:"Индия",nameEn:"India",flag:"🇮🇳",country:"Hindiston",price:700,img:"https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&h=500&fit=crop",desc:"Ranglar mamlakati",places:"Taj Mahal, Dehli",bestSeason:"Okt-Mart"},
+            {id:"greece",name:"Gretsiya",nameRu:"Греция",nameEn:"Greece",flag:"🇬🇷",country:"Gretsiya",price:1000,img:"https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&h=500&fit=crop",desc:"Qadimgi sivilizatsiya",places:"Afina, Santorini",bestSeason:"May-Sent"},
+            {id:"croatia",name:"Xorvatiya",nameRu:"Хорватия",nameEn:"Croatia",flag:"🇭🇷",country:"Xorvatiya",price:900,img:"https://images.unsplash.com/photo-1559475556-913e91e0b2bb?w=800&h=500&fit=crop",desc:"Adriatik durdonasi",places:"Dubrovnik, Split",bestSeason:"Iyun-Sent"},
+            {id:"switzerland",name:"Shveytsariya",nameRu:"Швейцария",nameEn:"Switzerland",flag:"🇨🇭",country:"Shveytsariya",price:2000,img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop",desc:"Alp tog'lari mamlakati",places:"Tsyurix, Interlaken",bestSeason:"Dek-Mart"},
+            {id:"germany",name:"Germaniya",nameRu:"Германия",nameEn:"Germany",flag:"🇩🇪",country:"Germaniya",price:1300,img:"https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=800&h=500&fit=crop",desc:"Texnologiya va madaniyat",places:"Berlin, Myunxen",bestSeason:"May-Sent"},
+            {id:"netherlands",name:"Niderlandiya",nameRu:"Нидерланды",nameEn:"Netherlands",flag:"🇳🇱",country:"Niderlandiya",price:1200,img:"https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=800&h=500&fit=crop",desc:"Lolalar mamlakati",places:"Amsterdam",bestSeason:"Aprel-May"},
+            {id:"sweden",name:"Shvetsiya",nameRu:"Швеция",nameEn:"Sweden",flag:"🇸🇪",country:"Shvetsiya",price:1600,img:"https://images.unsplash.com/photo-1514918701936-cd59ec307e42?w=800&h=500&fit=crop",desc:"Skandinaviya go'zalligi",places:"Stokgolm",bestSeason:"Iyun-Avg"},
+            {id:"norway",name:"Norvegiya",nameRu:"Норвегия",nameEn:"Norway",flag:"🇳🇴",country:"Norvegiya",price:1800,img:"https://images.unsplash.com/photo-1509913988357-3fd07a59a6b3?w=800&h=500&fit=crop",desc:"Fyordlar mamlakati",places:"Oslo, Bergen",bestSeason:"May-Avg"},
+            {id:"southafrica",name:"Janubiy Afrika",nameRu:"ЮАР",nameEn:"South Africa",flag:"🇿🇦",country:"Janubiy Afrika",price:1000,img:"https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800&h=500&fit=crop",desc:"Safari mamlakati",places:"Keyptaun",bestSeason:"May-Sent"},
+            {id:"brazil",name:"Braziliya",nameRu:"Бразилия",nameEn:"Brazil",flag:"🇧🇷",country:"Braziliya",price:1100,img:"https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&h=500&fit=crop",desc:"Amazonka o'rmonlari",places:"Rio, Amazonka",bestSeason:"Dek-Mart"},
+            {id:"argentina",name:"Argentina",nameRu:"Аргентина",nameEn:"Argentina",flag:"🇦🇷",country:"Argentina",price:1000,img:"https://images.unsplash.com/photo-1516307365426-bea591f05011?w=800&h=500&fit=crop",desc:"Tango mamlakati",places:"Buenos Ayres",bestSeason:"Okt-Mart"},
+            {id:"australia",name:"Avstraliya",nameRu:"Австралия",nameEn:"Australia",flag:"🇦🇺",country:"Avstraliya",price:2200,img:"https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=800&h=500&fit=crop",desc:"Keng qit'a",places:"Sidney, Melburn",bestSeason:"Sent-Noyabr"},
+            {id:"newzealand",name:"Yangi Zelandiya",nameRu:"Новая Зеландия",nameEn:"New Zealand",flag:"🇳🇿",country:"Yangi Zelandiya",price:1900,img:"https://images.unsplash.com/photo-1507699622108-4be3abd695ad?w=800&h=500&fit=crop",desc:"Tabiat mo''jizasi",places:"Oklend",bestSeason:"Dek-Mart"},
+            {id:"morocco",name:"Marokash",nameRu:"Марокко",nameEn:"Morocco",flag:"🇲🇦",country:"Marokash",price:800,img:"https://images.unsplash.com/photo-1489749798305-4a847527abe1?w=800&h=500&fit=crop",desc:"Afrika durdonasi",places:"Marrakesh",bestSeason:"Mart-May"},
+            // 10 ta yangi davlat - ishlaydigan rasmlar bilan
+            {id:"indonesia",name:"Indoneziya",nameRu:"Индонезия",nameEn:"Indonesia",flag:"🇮🇩",country:"Indoneziya",price:750,img:"https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=800&h=500&fit=crop",desc:"Orollar jannati",places:"Bali, Jakarta",bestSeason:"Aprel-Okt"},
+            {id:"maldives",name:"Maldivlar",nameRu:"Мальдивы",nameEn:"Maldives",flag:"🇲🇻",country:"Maldivlar",price:1200,img:"https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=800&h=500&fit=crop",desc:"Durilgan suv va plyajlar",places:"Male, Hulhumale",bestSeason:"Noyabr-Aprel"},
+            {id:"singapore",name:"Singapur",nameRu:"Сингапур",nameEn:"Singapore",flag:"🇸🇬",country:"Singapur",price:1400,img:"https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=800&h=500&fit=crop",desc:"Kelajak shahri",places:"Marina Bay, Sentosa",bestSeason:"Yil bo'yi"},
+            {id:"southkorea",name:"Janubiy Koreya",nameRu:"Южная Корея",nameEn:"South Korea",flag:"🇰🇷",country:"Janubiy Koreya",price:1300,img:"https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&h=500&fit=crop",desc:"K-pop va texnologiya",places:"Seul, Pusan",bestSeason:"Aprel-Iyun"},
+            {id:"vietnam",name:"Vetnam",nameRu:"Вьетнам",nameEn:"Vietnam",flag:"🇻🇳",country:"Vetnam",price:550,img:"https://images.unsplash.com/photo-1558397768-3d8e8f4c2cf1?w=800&h=500&fit=crop",desc:"Go'zal tabiat",places:"Xanoy, Xoshimin",bestSeason:"Yanvar-Mart"},
+            {id:"philippines",name:"Filippin",nameRu:"Филиппины",nameEn:"Philippines",flag:"🇵🇭",country:"Filippin",price:600,img:"https://images.unsplash.com/photo-1535146647447-d7ff9c962c20?w=800&h=500&fit=crop",desc:"Plyaj va tog'lar",places:"Manila, Sebu",bestSeason:"Noyabr-May"},
+            {id:"malaysia",name:"Malayziya",nameRu:"Малайзия",nameEn:"Malaysia",flag:"🇲🇾",country:"Malayziya",price:650,img:"https://images.unsplash.com/photo-1519631128182-433895475ffe?w=800&h=500&fit=crop",desc:"Petronas minoralari",places:"Kuala Lumpur",bestSeason:"May-Sent"},
+            {id:"chile",name:"Chili",nameRu:"Чили",nameEn:"Chile",flag:"🇨🇱",country:"Chili",price:950,img:"https://images.unsplash.com/photo-1552217018-672c6b963330?w=800&h=500&fit=crop",desc:"Atakama cho'li",places:"Santyago, Patagoniya",bestSeason:"Dek-Mart"},
+            {id:"peru",name:"Peru",nameRu:"Перу",nameEn:"Peru",flag:"🇵🇪",country:"Peru",price:850,img:"https://images.unsplash.com/photo-1526392060635-5d1cfbe2262e?w=800&h=500&fit=crop",desc:"Machu-Pikchu",places:"Lima, Kusk",bestSeason:"May-Sent"},
+            {id:"ukraine",name:"Ukraina",nameRu:"Украина",nameEn:"Ukraine",flag:"🇺🇦",country:"Ukraina",price:500,img:"https://images.unsplash.com/photo-1537974499243-66f0d1b7bdd7?w=800&h=500&fit=crop",desc:"Sharqiy Yevropa durdonasi",places:"Kiyev, Lvov",bestSeason:"May-Sent"}
+        ];
+
+        const amenityNames = {
+            wifi: {uz:"Wi-Fi", ru:"Wi-Fi", en:"Wi-Fi"},
+            meal: {uz:"3 Mahal Ovqat", ru:"3-разовое питание", en:"3 Meals"},
+            parking: {uz:"Parking", ru:"Парковка", en:"Parking"},
+            pool: {uz:"Basseyn", ru:"Бассейн", en:"Pool"},
+            gym: {uz:"Sport Zal", ru:"Тренажерный зал", en:"Gym"},
+            reception24: {uz:"24/7 Resepshn", ru:"Круглосуточная регистрация", en:"24/7 Reception"},
+            laundry: {uz:"Kir yuvish", ru:"Прачечная", en:"Laundry"},
+            transfer: {uz:"Transfer", ru:"Трансфер", en:"Transfer"},
+            cafe: {uz:"Kafe/Bar", ru:"Кафе/Бар", en:"Cafe/Bar"},
+            ac: {uz:"Konditsioner", ru:"Кондиционер", en:"AC"},
+            spa: {uz:"SPA/Massaj", ru:"СПА/Массаж", en:"Spa"},
+            kids: {uz:"Bolalar maydoni", ru:"Детская комната", en:"Kids Club"},
+            safe: {uz:"Seyf", ru:"Сейф", en:"Safe Box"}
+        };
+        
+        const amenityIcons = {
+            wifi:"fa-wifi", meal:"fa-utensils", parking:"fa-parking", pool:"fa-swimmer", gym:"fa-dumbbell",
+            reception24:"fa-clock", laundry:"fa-tshirt", transfer:"fa-car", cafe:"fa-coffee", ac:"fa-wind",
+            spa:"fa-spa", kids:"fa-child", safe:"fa-shield-alt"
+        };
+        
+        const hotelNames = [
+            "Grand Royal Hotel", "Plaza Premium", "Sunset Paradise", "Golden Palace", "Ocean View Resort",
+            "Mountain Retreat", "City Central", "Luxury Stay", "Comfort Inn", "Elite Suites"
+        ];
+        
+        const hotelLocations = [
+            "Shahar markazi", "Tarixiy hudud", "Plyaj bo'yi", "Tog' yon bag'ri", "Park yaqinida",
+            "Aeroport yaqinida", "Savdo markazi yonida", "Madaniyat hududi", "Ko'l bo'yi", "Viloyat markazi"
+        ];
+        
+        // 10 ta ishlaydigan mehmonxona rasmlari
+        const hotelImgs = [
+            "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1582719505098-17e5b7f61433?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1569428034239-f9565e32e224?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1582655820978-8d8d6b7d2f43?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1582719505098-17e5b7f61433?w=600&h=400&fit=crop",
+            "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&h=400&fit=crop"
+        ];
+        
+        const discountRates = [5, 10, 12, 15, 18, 20, 22, 25, 28, 30];
+        const ratingOptions = [2.5, 3.0, 3.5, 4.0, 4.2, 4.5, 4.7, 4.8, 4.9, 5.0];
+        
+        const amenityCombinations = [
+            ["wifi", "meal", "parking"],
+            ["wifi", "meal", "parking", "pool"],
+            ["wifi", "meal", "parking", "pool", "gym"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24", "laundry"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24", "laundry", "transfer"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24", "laundry", "transfer", "cafe"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24", "laundry", "transfer", "cafe", "ac"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24", "laundry", "transfer", "cafe", "ac", "spa"],
+            ["wifi", "meal", "parking", "pool", "gym", "reception24", "laundry", "transfer", "cafe", "ac", "spa", "kids", "safe"]
+        ];
+        
+        let hotelsData = {};
+        
+        countries.forEach(country => {
+            hotelsData[country.id] = [];
+            for(let i = 0; i < 10; i++) {
+                let originalPrice = Math.floor(Math.random() * 500) + 100;
+                let discountPercent = discountRates[i % discountRates.length];
+                let discountedPrice = Math.round(originalPrice * (100 - discountPercent) / 100);
+                let rating = ratingOptions[i % ratingOptions.length];
+                let amenities = amenityCombinations[i % amenityCombinations.length];
+                
+                hotelsData[country.id].push({
+                    id: `${country.id}_hotel_${i}`,
+                    name: hotelNames[i % hotelNames.length],
+                    originalPrice: originalPrice,
+                    discountPercent: discountPercent,
+                    discountedPrice: discountedPrice,
+                    rating: rating,
+                    img: hotelImgs[i % hotelImgs.length],
+                    location: hotelLocations[i % hotelLocations.length],
+                    address: `${hotelLocations[i % hotelLocations.length]}, ${country.name}`,
+                    desc: `${hotelNames[i % hotelNames.length]} - ${country.name}ning eng yaxshi mehmonxonalaridan biri. ${rating} yulduzli qulaylik va servis. ${discountPercent}% chegirma bilan ajoyib narx!`,
+                    amenities: amenities
+                });
+            }
+        });
+
+        function getCityName(c){
+            if(lang==='ru') return c.nameRu;
+            if(lang==='en') return c.nameEn;
+            return c.name;
+        }
+        
+        function getAmenityName(key){
+            return amenityNames[key]?.[lang] || amenityNames[key]?.uz || key;
+        }
+        
+        function updateUILanguage() {
+            document.getElementById('navHome').innerText = t('home');
+            document.getElementById('navDestinations').innerText = t('destinations');
+            document.getElementById('navServices').innerText = t('services');
+            document.getElementById('loginBtn').innerHTML = isLoggedIn ? "👤 Profil" : t('login');
+            document.getElementById('loginTitle').innerHTML = `<i class="fas fa-sign-in-alt"></i> ${t('login')}`;
+            document.getElementById('demoText').innerText = t('demo');
+            document.getElementById('heroTitle').innerText = t('heroTitle');
+            document.getElementById('heroSubtitle').innerText = t('heroSubtitle');
+            document.getElementById('startBtn').innerText = t('startBtn');
+            document.getElementById('destinationsTitle').innerHTML = t('destinationsTitle');
+            document.getElementById('backToCityText').innerText = t('backToCity');
+            document.getElementById('backToHotelsText').innerText = t('backToHotels');
+            document.getElementById('infoTitle').innerHTML = t('infoTitle');
+            document.getElementById('infoSubtitle').innerText = t('infoSubtitle');
+            document.getElementById('labelFullname').innerHTML = '<i class="fas fa-user"></i> To\'liq ism';
+            document.getElementById('labelEmail').innerHTML = '<i class="fas fa-envelope"></i> Email';
+            document.getElementById('labelPhone').innerHTML = '<i class="fas fa-phone-alt"></i> Telefon';
+            document.getElementById('labelBirthdate').innerHTML = '<i class="fas fa-calendar-alt"></i> Tug\'ilgan sana';
+            document.getElementById('labelCitizenship').innerHTML = '<i class="fas fa-flag-checkered"></i> Fuqarolik';
+            document.getElementById('labelPassport').innerHTML = '<i class="fas fa-passport"></i> Passport';
+            document.getElementById('labelCard').innerHTML = '<i class="fas fa-credit-card"></i> Karta raqami';
+            document.getElementById('labelCardExp').innerHTML = '<i class="fas fa-calendar"></i> Karta muddati';
+            document.getElementById('labelNights').innerHTML = '<i class="fas fa-bed"></i> Kechalar soni';
+            document.getElementById('labelRooms').innerHTML = '<i class="fas fa-door-open"></i> Xonalar soni';
+            document.getElementById('labelCheckIn').innerHTML = '<i class="fas fa-calendar-check"></i> Kirish sanasi';
+            document.getElementById('labelCheckOut').innerHTML = '<i class="fas fa-calendar-times"></i> Chiqish sanasi';
+            document.getElementById('totalLabel').innerHTML = t('totalPayment');
+            document.getElementById('confirmBtnText').innerText = t('confirmBooking');
+            document.getElementById('successTitle').innerHTML = t('successTitle');
+            document.getElementById('successSubtitle').innerText = t('successSubtitle');
+            renderCards();
+        }
+        
+        function renderCards(){
+            let term=document.getElementById('searchInput').value.toLowerCase();
+            let filtered=countries.filter(c=>getCityName(c).toLowerCase().includes(term)||c.country.toLowerCase().includes(term));
+            let container=document.getElementById('cardContainer');
+            document.getElementById('resultCount').innerText = lang==='uz' ? `Natija: ${filtered.length}` : (lang==='ru' ? `Результат: ${filtered.length}` : `Result: ${filtered.length}`);
+            if(!filtered.length){container.innerHTML='<div style="text-align:center;padding:40px;">Topilmadi</div>';return;}
+            container.innerHTML='';
+            filtered.forEach(c=>{
+                let div=document.createElement('div');div.className='card';
+                div.innerHTML=`<img src="${c.img}" onerror="this.src='https://placehold.co/800x500?text=TravelGo'"><h3>${c.flag} ${getCityName(c)}</h3><p>${c.country} | ${c.desc}</p><div class="price-badge">$${c.price}/${lang==='uz'?'kishi':(lang==='ru'?'чел':'guest')}</div>`;
+                div.onclick=()=>{openCity(c);};
+                container.appendChild(div);
+            });
+        }
+
+        function openCity(city){
+            selectedCity=city;
+            let modal=document.getElementById('cityModal');
+            let contentDiv=document.getElementById('cityContent');
+            contentDiv.innerHTML=`
+                <div class="city-header">
+                    <div class="city-img-col"><img src="${city.img}" onerror="this.src='https://placehold.co/800x500?text=TravelGo'"></div>
+                    <div class="city-info-col">
+                        <h1>${city.flag} ${getCityName(city)}</h1>
+                        <div class="city-desc">${city.desc} — ${city.country}ning eng go'zal shaharlaridan biri.</div>
+                        <div class="info-row"><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><div><div class="info-label">MAMLAKAT</div><div class="info-value">${city.country}</div></div></div>
+                        <div class="info-row"><div class="info-icon"><i class="fas fa-star"></i></div><div><div class="info-label">MASHHUR JOYLAR</div><div class="info-value">${city.places}</div></div></div>
+                        <div class="info-row"><div class="info-icon"><i class="fas fa-calendar-alt"></i></div><div><div class="info-label">ENG YAXSHI MAVSUM</div><div class="info-value">${city.bestSeason}</div></div></div>
+                        <div class="info-row"><div class="info-icon"><i class="fas fa-dollar-sign"></i></div><div><div class="info-label">NARX</div><div class="info-value" style="font-size:1.5rem;font-weight:800;color:#ef4444;">$${city.price} <small>/ ${lang==='uz'?'kishi':(lang==='ru'?'чел':'guest')}</small></div></div></div>
+                        <div class="btn-group">
+                            <button class="cancel-city-btn" id="cancelCityBtn">Orqaga</button>
+                            <button class="book-hotel-btn" id="viewHotelsBtn">Mehmonxonalarni ko'rish</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            modal.classList.add('active');
+            document.getElementById('cancelCityBtn').onclick=()=>modal.classList.remove('active');
+            document.getElementById('viewHotelsBtn').onclick=()=>{modal.classList.remove('active'); openHotelsPage(city);};
+        }
+
+        function openHotelsPage(city){
+            selectedCity=city;
+            let hotels=hotelsData[city.id];
+            document.getElementById('hotelsCityTitle').innerHTML=`🏨 ${getCityName(city)} dagi mehmonxonalar`;
+            document.getElementById('hotelsCitySubtitle').innerHTML=`${hotels.length} ta mehmonxona | Turli chegirmalar (5%-30%) | 2.5-5 ★`;
+            
+            let grid=document.getElementById('hotelsGrid');
+            grid.innerHTML=hotels.map(hotel=>{
+                let stars = '';
+                let fullStars = Math.floor(hotel.rating);
+                let hasHalf = hotel.rating % 1 !== 0;
+                for(let i=0; i<fullStars; i++) stars += '★';
+                if(hasHalf) stars += '½';
+                let emptyStars = 5 - Math.ceil(hotel.rating);
+                for(let i=0; i<emptyStars; i++) stars += '☆';
+                
+                return `
+                <div class="hotel-card" data-hotel-id="${hotel.id}">
+                    <img src="${hotel.img}" onerror="this.src='https://placehold.co/600x400?text=Hotel'">
+                    <div class="hotel-info">
+                        <div class="hotel-name">${hotel.name}</div>
+                        <div class="hotel-location"><i class="fas fa-map-marker-alt"></i> ${hotel.location}</div>
+                        <div class="discount-system">
+                            <div>
+                                <span class="discount-badge-main"><i class="fas fa-tag"></i> CHEGIRMA</span>
+                                <span class="discount-percent"><i class="fas fa-percent"></i> ${hotel.discountPercent}% OFF</span>
+                            </div>
+                            <div class="price-comparison">
+                                <span class="old-price">$${hotel.originalPrice}</span>
+                                <span class="new-price">$${hotel.discountedPrice}</span>
+                                <span class="save-amount">Save $${hotel.originalPrice - hotel.discountedPrice}</span>
+                            </div>
+                        </div>
+                        <div class="hotel-rating">${stars} (${hotel.rating})</div>
+                        <div class="amenities">
+                            ${hotel.amenities.map(a => `<span class="amenity-item"><i class="fas ${amenityIcons[a]}"></i> ${getAmenityName(a)}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+            
+            document.getElementById('hotelsPage').classList.add('active');
+            
+            document.querySelectorAll('.hotel-card').forEach((card, index)=>{
+                card.onclick=()=>{
+                    let hotel=hotels[index];
+                    if(hotel) openHotelDetailPage(city, hotel);
+                };
+            });
+        }
+
+        function openHotelDetailPage(city, hotel){
+            selectedHotel=hotel;
+            let stars = '';
+            let fullStars = Math.floor(hotel.rating);
+            let hasHalf = hotel.rating % 1 !== 0;
+            for(let i=0; i<fullStars; i++) stars += '★';
+            if(hasHalf) stars += '½';
+            let emptyStars = 5 - Math.ceil(hotel.rating);
+            for(let i=0; i<emptyStars; i++) stars += '☆';
+            
+            let detailContent=document.getElementById('hotelDetailContent');
+            detailContent.innerHTML=`
+                <img class="hotel-detail-img" src="${hotel.img}" onerror="this.src='https://placehold.co/800x400?text=Hotel'">
+                <div class="hotel-detail-content">
+                    <div class="hotel-detail-name">${hotel.name}</div>
+                    <div class="hotel-detail-location">
+                        <i class="fas fa-map-marker-alt"></i> ${hotel.location}, ${getCityName(city)}
+                    </div>
+                    <div class="hotel-detail-desc">${hotel.desc}</div>
+                    
+                    <div class="discount-system" style="margin-bottom: 20px;">
+                        <div>
+                            <span class="discount-badge-main"><i class="fas fa-tag"></i> CHEGIRMA</span>
+                            <span class="discount-percent"><i class="fas fa-percent"></i> ${hotel.discountPercent}% OFF</span>
+                        </div>
+                        <div class="price-comparison">
+                            <span class="old-price">$${hotel.originalPrice}</span>
+                            <span class="new-price">$${hotel.discountedPrice}</span>
+                            <span class="save-amount">Save $${hotel.originalPrice - hotel.discountedPrice}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">⭐ Reyting</div>
+                        <div class="detail-value">${stars} (${hotel.rating} / 5)</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">📍 Manzil</div>
+                        <div class="detail-value">${hotel.address}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">🎁 Qulayliklar</div>
+                        <div class="detail-value">
+                            <div class="amenities-grid">
+                                ${hotel.amenities.map(a => `<div class="amenity-card"><i class="fas ${amenityIcons[a]}"></i> <span>${getAmenityName(a)}</span></div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <button class="book-now-btn" id="bookNowFromDetail"><i class="fas fa-calendar-check"></i> ${t('bookNow')}</button>
+                </div>
+            `;
+            document.getElementById('hotelDetailPage').classList.add('active');
+            
+            document.getElementById('bookNowFromDetail').onclick=()=>{
+                // LOGIN TEKSHIRUVI
+                if (!isLoggedIn) {
+                    alert(t('loginRequired'));
+                    document.getElementById('loginModal').classList.add('active');
+                    return;
+                }
+                document.getElementById('hotelDetailPage').classList.remove('active');
+                openInfoPage(city, hotel);
+            };
+        }
+
+        function openInfoPage(city, hotel){
+            let today=new Date();
+            let after3=new Date(today);
+            after3.setDate(today.getDate()+3);
+            
+            document.getElementById('hotelSummary').innerHTML=`
+                <h3><i class="fas fa-hotel"></i> ${hotel.name}</h3>
+                <div class="summary-row"><span>📍 Manzil:</span><span>${hotel.location}, ${getCityName(city)}</span></div>
+                <div class="summary-row"><span>⭐ Reyting:</span><span>${'★'.repeat(Math.floor(hotel.rating))} (${hotel.rating})</span></div>
+                <div class="summary-row"><span>💰 Tun narxi:</span><span><span style="text-decoration:line-through;">$${hotel.originalPrice}</span> <strong style="color:#10b981;">$${hotel.discountedPrice}</strong> / tun (${hotel.discountPercent}% chegirma)</span></div>
+            `;
+            
+            document.getElementById('bookCheckIn').value=today.toISOString().slice(0,10);
+            document.getElementById('bookCheckOut').value=after3.toISOString().slice(0,10);
+            document.getElementById('bookNights').value=3;
+            document.getElementById('bookRooms').value=1;
+            document.getElementById('bookFullname').value='';
+            document.getElementById('bookEmail').value='';
+            document.getElementById('bookPhone').value='';
+            document.getElementById('bookBirthdate').value='';
+            document.getElementById('bookPassport').value='';
+            document.getElementById('bookCard').value='';
+            document.getElementById('bookCardExp').value='';
+            
+            function calcTotal(){
+                let nights=parseInt(document.getElementById('bookNights').value)||1;
+                let rooms=parseInt(document.getElementById('bookRooms').value)||1;
+                let total=hotel.discountedPrice * nights * rooms;
+                document.getElementById('totalPrice').innerHTML=`$${total}`;
+                return total;
+            }
+            
+            document.getElementById('bookNights').addEventListener('input',calcTotal);
+            document.getElementById('bookRooms').addEventListener('input',calcTotal);
+            calcTotal();
+            
+            document.getElementById('infoPage').classList.add('active');
+            
+            document.getElementById('confirmBookingBtn').onclick=()=>{
+                let fullname=document.getElementById('bookFullname').value;
+                let email=document.getElementById('bookEmail').value;
+                let phone=document.getElementById('bookPhone').value;
+                let birthdate=document.getElementById('bookBirthdate').value;
+                let citizenship=document.getElementById('bookCitizenship').value;
+                let passport=document.getElementById('bookPassport').value;
+                let card=document.getElementById('bookCard').value;
+                let cardExp=document.getElementById('bookCardExp').value;
+                let nights=document.getElementById('bookNights').value;
+                let rooms=document.getElementById('bookRooms').value;
+                let checkIn=document.getElementById('bookCheckIn').value;
+                let checkOut=document.getElementById('bookCheckOut').value;
+                let total=document.getElementById('totalPrice').innerText;
+                
+                if(!fullname || !email || !phone || !birthdate || !passport || !card || !cardExp){
+                    alert(t('fillAllFields'));
+                    return;
+                }
+                if(new Date(checkOut)<=new Date(checkIn)){
+                    alert(t('checkOutError'));
+                    return;
+                }
+                
+                document.getElementById('infoPage').classList.remove('active');
+                showSuccessPage({
+                    hotel:hotel.name, city:getCityName(city),
+                    fullname, email, phone,
+                    birthdate, citizenship, passport,
+                    checkIn, checkOut, nights, rooms,
+                    total:total,
+                    discountPercent: hotel.discountPercent
+                });
+            };
+        }
+
+        function showSuccessPage(data){
+            document.getElementById('successBody').innerHTML=`
+                <div class="success-info">
+                    <div class="success-row"><span>🏨 Mehmonxona</span><span>${data.hotel}</span></div>
+                    <div class="success-row"><span>📍 Shahar</span><span>${data.city}</span></div>
+                    <div class="success-row"><span>👤 Sayohatchi</span><span>${data.fullname}</span></div>
+                    <div class="success-row"><span>📧 Email</span><span>${data.email}</span></div>
+                    <div class="success-row"><span>📞 Telefon</span><span>${data.phone}</span></div>
+                    <div class="success-row"><span>🛂 Passport</span><span>${data.passport}</span></div>
+                    <div class="success-row"><span>🌍 Fuqarolik</span><span>${data.citizenship}</span></div>
+                    <div class="success-row"><span>🎂 Tug'ilgan sana</span><span>${data.birthdate}</span></div>
+                    <div class="success-row"><span>📅 Kirish</span><span>${data.checkIn}</span></div>
+                    <div class="success-row"><span>📅 Chiqish</span><span>${data.checkOut}</span></div>
+                    <div class="success-row"><span>🛏 Tunlar</span><span>${data.nights} tun, ${data.rooms} xona</span></div>
+                    <div class="success-row"><span>🏷️ Chegirma</span><span>${data.discountPercent}%</span></div>
+                </div>
+                <div class="success-total"><strong>💰 Umumiy to'lov: ${data.total}</strong></div>
+                <button class="home-btn" id="homeSuccessBtn"><i class="fas fa-home"></i> ${t('homeBtn')}</button>
+            `;
+            document.getElementById('successPage').classList.add('active');
+            document.getElementById('homeSuccessBtn').onclick=()=>{
+                document.getElementById('successPage').classList.remove('active');
+                window.scrollTo(0,0);
+            };
+        }
+
+        document.getElementById('backToCityBtn').onclick=()=>{
+            document.getElementById('hotelsPage').classList.remove('active');
+            if(selectedCity) openCity(selectedCity);
+        };
+        document.getElementById('backToHotelsDetail').onclick=()=>{
+            document.getElementById('hotelDetailPage').classList.remove('active');
+            if(selectedCity) openHotelsPage(selectedCity);
+        };
+        document.getElementById('closeCityModal').onclick=()=>document.getElementById('cityModal').classList.remove('active');
+        
+        document.getElementById('searchInput').addEventListener('input',()=>renderCards());
+        document.getElementById('clearSearchBtn').onclick=()=>{document.getElementById('searchInput').value='';renderCards();};
+        
+        document.getElementById('themeToggle').onclick=()=>{document.body.classList.toggle('dark-mode');};
+        
+        // LOGIN
+        document.getElementById('loginBtn').onclick=()=>document.getElementById('loginModal').classList.add('active');
+        document.getElementById('closeLoginBtn').onclick=()=>document.getElementById('loginModal').classList.remove('active');
+        document.getElementById('doLoginBtn').onclick=()=>{
+            isLoggedIn = true;
+            alert(t('welcome'));
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('loginBtn').innerHTML = "👤 Profil";
+        };
+        
+        function setLang(l){
+            lang=l;
+            updateUILanguage();
+            renderCards();
+        }
+        
+        document.getElementById('langUz').onclick=()=>setLang('uz');
+        document.getElementById('langRu').onclick=()=>setLang('ru');
+        document.getElementById('langEn').onclick=()=>setLang('en');
+        
+        document.querySelector('.nav-home').onclick=()=>document.getElementById('home').scrollIntoView({behavior:'smooth'});
+        document.querySelector('.nav-destinations').onclick=()=>document.getElementById('destinations').scrollIntoView({behavior:'smooth'});
+        document.getElementById('startBtn').onclick=()=>document.getElementById('destinations').scrollIntoView({behavior:'smooth'});
+        
+        updateUILanguage();
+        renderCards();
+    </script>
+</body>
+</html>
